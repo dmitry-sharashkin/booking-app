@@ -1,9 +1,11 @@
 // src/app/page.tsx
 "use client";
 
-import { Grid, Container, Typography } from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 import { useGetBookingsQuery } from "@/features/bookings/bookingsApi";
 import RoomCard from "@/components/RoomCard";
+
+const rooms = Array.from({ length: 10 }, (_, i) => i + 1);
 
 export default function HomePage() {
   const { data: bookings, isLoading, error } = useGetBookingsQuery();
@@ -16,16 +18,30 @@ export default function HomePage() {
       <Typography variant="h4" align="center" gutterBottom>
         Бронирование комнат
       </Typography>
-      <Grid container spacing={3}>
-        {Array.from({ length: 10 }, (_, i) => {
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 3,
+          justifyContent: "center",
+        }}
+      >
+        {rooms.map((_, i) => {
           const roomId = String(i + 1);
           return (
-            <Grid item xs={6} sm={4} md={3} key={roomId}>
-              <RoomCard roomId={roomId} bookedBy={bookings?.[roomId] || null} />{" "}
-            </Grid>
+            <Box
+              key={roomId}
+              sx={{
+                flex: "1 1 calc(25% - 18px)", // фиксировано под 4 колонки
+                minWidth: 140,
+                maxWidth: "calc(25% - 18px)",
+              }}
+            >
+              <RoomCard roomId={roomId} bookedBy={bookings?.[roomId] || null} />
+            </Box>
           );
         })}
-      </Grid>
+      </Box>
     </Container>
   );
 }
