@@ -27,7 +27,7 @@ export default function RoomCard({ roomId, bookedBy }: RoomCardProps) {
   const [bookRoom, { isLoading }] = useBookRoomMutation();
 
   const handleOpen = () => {
-    if (!bookedBy) setOpen(true);
+    if (!open) setOpen(true);
   };
 
   const handleClose = () => {
@@ -66,7 +66,7 @@ export default function RoomCard({ roomId, bookedBy }: RoomCardProps) {
         onClick={handleOpen}
       >
         <CardContent sx={{ p: 1, textAlign: "center" }}>
-          <Typography variant="h6">Комната {roomId}</Typography>
+          <Typography variant="h6">Стейдж {roomId}</Typography>
           {bookedBy ? (
             <Typography color="primary" fontWeight="bold">
               Забронирована: {bookedBy}
@@ -78,7 +78,16 @@ export default function RoomCard({ roomId, bookedBy }: RoomCardProps) {
       </Card>
 
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Бронирование комнаты {roomId}</DialogTitle>
+        <DialogTitle>
+          Бронирование комнаты {roomId} <br />
+        </DialogTitle>
+        {bookedBy && (
+          <DialogContent>
+            <b>Внимание стейдж уже забронирован пользователем: {bookedBy}</b>{" "}
+            <br />
+            Вы уверенны, что хотите забронировать этот стейдж?
+          </DialogContent>
+        )}
         <DialogContent>
           <TextField
             autoFocus

@@ -16,7 +16,7 @@ export default function HomePage() {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography variant="h4" align="center" gutterBottom>
-        Бронирование комнат
+        Бронирование стейджей
       </Typography>
       <Box
         sx={{
