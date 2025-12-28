@@ -42,7 +42,7 @@ export default function RoomCard({ roomId, bookedBy }: RoomCardProps) {
       return;
     }
     try {
-      await bookRoom({ roomId, name }).unwrap();
+      await bookRoom({ room: roomId, name }).unwrap();
       handleClose();
     } catch (err) {
       setError("Не удалось забронировать комнату");

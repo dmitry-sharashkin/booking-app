@@ -1,23 +1,26 @@
-// src/features/bookings/bookingsApi.ts
+// features/bookings/bookingsApi.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export type Booking = string | null;
-export type Bookings = Record<string, Booking>;
+const a = { room_id: "1", booked_by: null };
 
+type Booking = {
+  room_id: string;
+  booked_by: null;
+};
 export const bookingsApi = createApi({
   reducerPath: "bookingsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/bookings" }),
   tagTypes: ["Bookings"],
+  baseQuery: fetchBaseQuery({ baseUrl: "/api" }),
   endpoints: (builder) => ({
-    getBookings: builder.query<Bookings, void>({
-      query: () => "",
+    getBookings: builder.query<Booking[], void>({
+      query: () => "bookings", // → /api/bookings
       providesTags: ["Bookings"],
     }),
-    bookRoom: builder.mutation<Bookings, { roomId: string; name: string }>({
-      query: ({ roomId, name }) => ({
-        url: `/${roomId}`,
+    bookRoom: builder.mutation<void, { room: string; name: string }>({
+      query: (body) => ({
+        url: "bookings",
         method: "POST",
-        body: { name },
+        body,
       }),
       invalidatesTags: ["Bookings"],
     }),

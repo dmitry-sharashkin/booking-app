@@ -26,21 +26,21 @@ export default function HomePage() {
           justifyContent: "center",
         }}
       >
-        {rooms.map((_, i) => {
-          const roomId = String(i + 1);
-          return (
-            <Box
-              key={roomId}
-              sx={{
-                flex: "1 1 calc(25% - 18px)", // фиксировано под 4 колонки
-                minWidth: 140,
-                maxWidth: "calc(25% - 18px)",
-              }}
-            >
-              <RoomCard roomId={roomId} bookedBy={bookings?.[roomId] || null} />
-            </Box>
-          );
-        })}
+        {bookings &&
+          bookings.map((it) => {
+            return (
+              <Box
+                key={it.room_id}
+                sx={{
+                  flex: "1 1 calc(25% - 18px)", // фиксировано под 4 колонки
+                  minWidth: 140,
+                  maxWidth: "calc(25% - 18px)",
+                }}
+              >
+                <RoomCard roomId={it.room_id} bookedBy={it.booked_by} />
+              </Box>
+            );
+          })}
       </Box>
     </Container>
   );
