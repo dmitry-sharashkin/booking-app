@@ -5,8 +5,6 @@ import { Box, Container, Typography } from "@mui/material";
 import { useGetBookingsQuery } from "@/features/bookings/bookingsApi";
 import RoomCard from "@/components/RoomCard";
 
-const rooms = Array.from({ length: 10 }, (_, i) => i + 1);
-
 export default function HomePage() {
   const { data: bookings, isLoading, error } = useGetBookingsQuery();
 
@@ -29,16 +27,11 @@ export default function HomePage() {
         {bookings &&
           bookings.map((it) => {
             return (
-              <Box
+              <RoomCard
+                roomId={it.room_id}
+                bookedBy={it.booked_by}
                 key={it.room_id}
-                sx={{
-                  flex: "1 1 calc(25% - 18px)", // фиксировано под 4 колонки
-                  minWidth: 140,
-                  maxWidth: "calc(25% - 18px)",
-                }}
-              >
-                <RoomCard roomId={it.room_id} bookedBy={it.booked_by} />
-              </Box>
+              />
             );
           })}
       </Box>

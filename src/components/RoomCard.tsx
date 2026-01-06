@@ -4,16 +4,16 @@
 import { useState } from "react";
 import {
   Button,
-  Card,
-  CardContent,
   TextField,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Typography,
+  Box,
 } from "@mui/material";
 import { useBookRoomMutation } from "@/features/bookings/bookingsApi";
+import PixelCharacter from "./PixelCharacter";
 
 type RoomCardProps = {
   roomId: string;
@@ -51,31 +51,41 @@ export default function RoomCard({ roomId, bookedBy }: RoomCardProps) {
 
   return (
     <>
-      <Card
-        variant="outlined"
+      <Box
         sx={{
           height: 120,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
+          width: {
+            md: "calc(50% - 12px)",
+            sm: "100%",
+            xs: "100%",
+            xxs: "100%",
+          },
           cursor: bookedBy ? "default" : "pointer",
           bgcolor: bookedBy ? "#f0f0f0" : "#ffffff",
           "&:hover": !bookedBy ? { bgcolor: "#f9f9f9" } : {},
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 2,
+          padding: 2,
+          border: "1px solid #e0e0e0",
         }}
         onClick={handleOpen}
       >
-        <CardContent sx={{ p: 1, textAlign: "center" }}>
-          <Typography variant="h6">Стейдж {roomId}</Typography>
+        <Box>
+          <Typography variant="h6" fontWeight={"600"}>
+            Стейдж {roomId}
+          </Typography>
           {bookedBy ? (
             <Typography color="primary" fontWeight="bold">
-              Забронирована: {bookedBy}
+              Забронирован: {bookedBy}
             </Typography>
           ) : (
-            <Typography color="text.secondary">Свободна</Typography>
+            <Typography color="text.secondary">Свободен</Typography>
           )}
-        </CardContent>
-      </Card>
+        </Box>
+        {bookedBy && <PixelCharacter size={80} name={bookedBy} />}
+      </Box>
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>
