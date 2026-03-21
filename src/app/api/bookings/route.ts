@@ -2,13 +2,31 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+function getSupabaseClient() {
+  const supabaseUrl =
+    process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    return null;
+  }
+
+  return createClient(supabaseUrl, serviceRoleKey);
+}
 
 export async function GET() {
   try {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.error(
+        "Supabase env vars are missing: SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY"
+      );
+      return NextResponse.json(
+        { error: "Server misconfiguration: Supabase env vars are missing" },
+        { status: 500 }
+      );
+    }
+
     const { data, error } = await supabase
       .from("bookings")
       .select("room_id, booked_by");
@@ -45,6 +63,17 @@ export async function GET() {
 }
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.error(
+        "Supabase env vars are missing: SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY"
+      );
+      return NextResponse.json(
+        { error: "Server misconfiguration: Supabase env vars are missing" },
+        { status: 500 }
+      );
+    }
+
     const { room, name } = await request.json();
 
     if (
