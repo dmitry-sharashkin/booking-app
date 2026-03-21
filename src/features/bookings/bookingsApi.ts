@@ -4,6 +4,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 type Booking = {
   room_id: string;
   booked_by: string | null;
+  /** ISO 8601, только если комната забронирована */
+  booked_at: string | null;
 };
 export const bookingsApi = createApi({
   reducerPath: "bookingsApi",

@@ -29,7 +29,7 @@ export async function GET() {
 
     const { data, error } = await supabase
       .from("bookings")
-      .select("room_id, booked_by");
+      .select("room_id, booked_by, booked_at");
 
     if (error) {
       console.error("Supabase GET error:", error);
@@ -46,9 +46,14 @@ export async function GET() {
       const roomId = String(i + 1);
       // Приводим room_id из БД к строке для сравнения
       const booking = data.find((item) => String(item.room_id) === roomId);
+      const bookedBy = booking ? booking.booked_by : null;
       return {
         room_id: roomId,
-        booked_by: booking ? booking.booked_by : null,
+        booked_by: bookedBy,
+        booked_at:
+          bookedBy && booking?.booked_at != null
+            ? booking.booked_at
+            : null,
       };
     });
 
@@ -92,7 +97,11 @@ export async function POST(request: NextRequest) {
     const { error } = await supabase
       .from("bookings")
       .upsert(
-        { room_id: room, booked_by: name.trim() },
+        {
+          room_id: room,
+          booked_by: name.trim(),
+          booked_at: new Date().toISOString(),
+        },
         { onConflict: "room_id" }
       );
 
@@ -140,7 +149,10 @@ export async function PATCH(request: NextRequest) {
     // We keep room records and only clear assignee.
     const { error } = await supabase
       .from("bookings")
-      .upsert({ room_id: room, booked_by: null }, { onConflict: "room_id" });
+      .upsert(
+        { room_id: room, booked_by: null, booked_at: null },
+        { onConflict: "room_id" }
+      );
 
     if (error) {
       console.error("Supabase PATCH error:", error);
