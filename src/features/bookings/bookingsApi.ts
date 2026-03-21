@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 type Booking = {
   room_id: string;
-  booked_by: null;
+  booked_by: string | null;
 };
 export const bookingsApi = createApi({
   reducerPath: "bookingsApi",
@@ -22,7 +22,19 @@ export const bookingsApi = createApi({
       }),
       invalidatesTags: ["Bookings"],
     }),
+    clearBooking: builder.mutation<void, { room: string }>({
+      query: (body) => ({
+        url: "bookings",
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["Bookings"],
+    }),
   }),
 });
 
-export const { useGetBookingsQuery, useBookRoomMutation } = bookingsApi;
+export const {
+  useGetBookingsQuery,
+  useBookRoomMutation,
+  useClearBookingMutation,
+} = bookingsApi;

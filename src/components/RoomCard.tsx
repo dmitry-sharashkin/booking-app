@@ -12,7 +12,10 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import { useBookRoomMutation } from "@/features/bookings/bookingsApi";
+import {
+  useBookRoomMutation,
+  useClearBookingMutation,
+} from "@/features/bookings/bookingsApi";
 import PixelCharacter from "./PixelCharacter";
 
 type RoomCardProps = {
@@ -25,6 +28,8 @@ export default function RoomCard({ roomId, bookedBy }: RoomCardProps) {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [bookRoom, { isLoading }] = useBookRoomMutation();
+  const [clearBooking, { isLoading: isClearingBooking }] =
+    useClearBookingMutation();
 
   const handleOpen = () => {
     if (!open) setOpen(true);
@@ -46,6 +51,15 @@ export default function RoomCard({ roomId, bookedBy }: RoomCardProps) {
       handleClose();
     } catch (err) {
       setError("Не удалось забронировать комнату");
+    }
+  };
+
+  const handleClearBooking = async () => {
+    try {
+      await clearBooking({ room: roomId }).unwrap();
+      handleClose();
+    } catch (err) {
+      setError("Не удалось снять бронь");
     }
   };
 
@@ -88,9 +102,24 @@ export default function RoomCard({ roomId, bookedBy }: RoomCardProps) {
       </Box>
 
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>
+
+        <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Box>
           Бронирование комнаты {roomId} <br />
+          </Box>
+
+          {bookedBy && (
+            <Button
+              variant="outlined"
+              onClick={handleClearBooking}
+              disabled={isClearingBooking}
+              color="error"
+            >
+              {isClearingBooking ? "..." : "Разбронировать"}
+            </Button>
+          )}
         </DialogTitle>
+
         {bookedBy && (
           <DialogContent>
             <b>Внимание стейдж уже забронирован пользователем: {bookedBy}</b>{" "}

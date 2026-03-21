@@ -113,3 +113,49 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.error(
+        "Supabase env vars are missing: SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY"
+      );
+      return NextResponse.json(
+        { error: "Server misconfiguration: Supabase env vars are missing" },
+        { status: 500 }
+      );
+    }
+
+    const { room } = await request.json();
+
+    if (!room || typeof room !== "string") {
+      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+    }
+
+    if (!/^(?:[1-9]|10)$/.test(room)) {
+      return NextResponse.json({ error: "Room must be 1-10" }, { status: 400 });
+    }
+
+    // We keep room records and only clear assignee.
+    const { error } = await supabase
+      .from("bookings")
+      .upsert({ room_id: room, booked_by: null }, { onConflict: "room_id" });
+
+    if (error) {
+      console.error("Supabase PATCH error:", error);
+      return NextResponse.json(
+        { error: "Failed to unbook room" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("Unexpected error in PATCH /api/bookings:", err);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
