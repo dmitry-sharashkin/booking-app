@@ -1,8 +1,6 @@
 // features/bookings/bookingsApi.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const a = { room_id: "1", booked_by: null };
-
 type Booking = {
   room_id: string;
   booked_by: null;
