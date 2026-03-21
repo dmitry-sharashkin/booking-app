@@ -7,7 +7,7 @@ import RoomCard from "@/components/RoomCard";
 
 export default function HomePage() {
   const { data: bookings, isLoading, error } = useGetBookingsQuery();
-
+  console.log(bookings);
   if (isLoading) return <div className="p-6">Загрузка...</div>;
   if (error) return <div className="p-6 text-red-600">Ошибка загрузки</div>;
 
@@ -30,6 +30,7 @@ export default function HomePage() {
               <RoomCard
                 roomId={it.room_id}
                 bookedBy={it.booked_by}
+                bookedAt={it.booked_at}
                 key={it.room_id}
               />
             );

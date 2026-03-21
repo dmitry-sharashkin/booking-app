@@ -18,12 +18,43 @@ import {
 } from "@/features/bookings/bookingsApi";
 import PixelCharacter from "./PixelCharacter";
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** Если с момента брони прошло < 24 ч — только часы:минуты, иначе дата + время */
+function formatBookedAt(bookedAt: string | null): string {
+  if (!bookedAt) return "";
+  const d = new Date(bookedAt);
+  if (Number.isNaN(d.getTime())) return bookedAt;
+
+  const elapsed = Date.now() - d.getTime();
+  if (elapsed >= 0 && elapsed < DAY_MS) {
+    return new Intl.DateTimeFormat("ru-RU", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(d);
+  }
+
+  return new Intl.DateTimeFormat("ru-RU", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(d);
+}
+
 type RoomCardProps = {
   roomId: string;
   bookedBy: string | null;
+  bookedAt: string | null;
 };
 
-export default function RoomCard({ roomId, bookedBy }: RoomCardProps) {
+export default function RoomCard({
+  roomId,
+  bookedBy,
+  bookedAt,
+}: RoomCardProps) {
+  const bookedAtLabel = formatBookedAt(bookedAt);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [error, setError] = useState("");
@@ -93,6 +124,7 @@ export default function RoomCard({ roomId, bookedBy }: RoomCardProps) {
           {bookedBy ? (
             <Typography color="primary" fontWeight="bold">
               Забронирован: {bookedBy}
+              {bookedAtLabel ? ` с ${bookedAtLabel}` : ""}
             </Typography>
           ) : (
             <Typography color="text.secondary">Свободен</Typography>
@@ -102,10 +134,15 @@ export default function RoomCard({ roomId, bookedBy }: RoomCardProps) {
       </Box>
 
       <Dialog open={open} onClose={handleClose}>
-
-        <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Box>
-          Бронирование комнаты {roomId} <br />
+        <DialogTitle
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Box>
+            Бронирование комнаты {roomId} <br />
           </Box>
 
           {bookedBy && (
@@ -122,7 +159,10 @@ export default function RoomCard({ roomId, bookedBy }: RoomCardProps) {
 
         {bookedBy && (
           <DialogContent>
-            <b>Внимание стейдж уже забронирован пользователем: {bookedBy}</b>{" "}
+            <b>
+              Внимание стейдж уже забронирован пользователем: {bookedBy}
+              {bookedAtLabel ? ` с ${bookedAtLabel}` : ""}
+            </b>{" "}
             <br />
             Вы уверенны, что хотите забронировать этот стейдж?
           </DialogContent>
